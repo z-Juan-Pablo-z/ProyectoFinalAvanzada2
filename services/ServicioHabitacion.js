@@ -13,6 +13,13 @@ export class ServicioHabitacion{
         return habitacion;
     }
 
+    async buscarHabitacionPorMaximoPersonas(numeroMaximoPersonas) {
+        const habitaciones = await modeloHabitacion.find({
+            maximoPersonas: numeroMaximoPersonas
+        });
+        return habitaciones;
+    }
+
     async agregarHabitacion(habitacionAgg){
         let datosValidados = new modeloHabitacion(habitacionAgg);
         return await datosValidados.save();
