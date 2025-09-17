@@ -1,7 +1,8 @@
 import { ServicioReserva } from "../services/ServicioReserva.js";
 import { modeloHabitacion } from "../Models/ModeloHabitacion.js";
+import { modeloReserva } from "../Models/ModeloReserva.js";
 import { ServicioHabitacion } from "../services/ServicioHabitacion.js"
-import {ServicioReserva} from "../services/ServicioReserva.js"
+
 
 export class ControladorReserva{
 
@@ -171,48 +172,57 @@ export class ControladorReserva{
     }
 
     async buscarDisponibilidad(req, res) {
-        let objServicioH = new ServicioHabitacion();
         try {
             const adultos = Number(req.body.adultos) || 0;
-            const ninos = Number(req.body.ninos) || 0;
+            const ninos   = Number(req.body.ninos) || 0;
             const { fechaEntrada, fechaSalida } = req.body;
 
             console.log("📩 Datos recibidos en backend:", req.body);
 
-            if (!fechaEntrada || !fechaSalida || adultos <= 0) {
-                return res.status(400).json({ error: 'Datos incompletos o inválidos' });
+            if (!fechaEntrada || !fechaSalida) {
+            return res.status(400).json({ mensaje: "Las fechas son obligatorias" });
+            }
+            if (adultos + ninos <= 0) {
+            return res.status(400).json({ mensaje: "Debe haber al menos una persona" });
             }
 
-            // Convertir a Date
             const entrada = new Date(fechaEntrada);
             const salida = new Date(fechaSalida);
 
-            if (isNaN(entrada) || isNaN(salida)) {
-                return res.status(400).json({ mensaje: "Formato de fecha inválido" });
+            if (isNaN(entrada) || isNaN(salida) || salida <= entrada) {
+            return res.status(400).json({ mensaje: "Rango de fechas inválido" });
             }
 
-            // 1️⃣ Buscar reservas que se crucen con las fechas solicitadas
-            const reservasOcupadas = await Reserva.find({
-                $or: [
-                    { fechaEntrada: { $lt: salida }, fechaSalida: { $gt: entrada } }
-                ]
+            // 1) Buscar reservas que se crucen:
+            const reservasOcupadas = await modeloReserva.find({
+            $and: [
+                { fechaEntrada: { $lt: salida } },
+                { fechaSalida: { $gt: entrada } }
+            ]
             });
 
-            const habitacionesOcupadas = reservasOcupadas.map(r => r.habitacionId.toString());
+            const habitacionesOcupadas = reservasOcupadas
+            .map(r => {
+                // asume campo 'habitacion' o similar
+                return r.habitacion ? String(r.habitacion) : null;
+            })
+            .filter(Boolean);
 
-            // 2️⃣ Filtrar habitaciones que no estén en habitacionesOcupadas
-            let disponibles = await modeloHabitacion.find({
-                _id: { $nin: habitacionesOcupadas },
-                numeroMaximoPersonas: { $gte: adultos + ninos }
+            // 2) Filtrar habitaciones disponibles:
+            const capacidadMin = adultos + ninos;
+
+            const disponibles = await modeloHabitacion.find({
+            _id: { $nin: habitacionesOcupadas },
+            numeroMaximoPersonas: { $gte: capacidadMin }
             });
 
             return res.status(200).json(disponibles);
 
         } catch (err) {
             console.error("❌ Error en buscarDisponibilidad:", err);
-            res.status(400).json({
-                mensaje: "Error buscando disponibilidad",
-                error: err.message
+            return res.status(500).json({
+            mensaje: "Error interno buscando disponibilidad",
+            error: err.message
             });
         }
     }
