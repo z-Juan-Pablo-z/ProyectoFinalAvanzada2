@@ -76,7 +76,7 @@ export class ControladorReserva{
             if(diffInDays>0){
                 //no programa ni el 300 ni el 500
                 //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
-                costo = Number(valorNoche)*Number(diffInDays);
+                costo = Number(datos_habitacion.valorNoche)*Number(diffInDays);
                 if(maxPerson>= numeroPersonas){
                     response.status(200).json({
                         "mensaje" : "exito Agregando la reserva",
@@ -100,7 +100,7 @@ export class ControladorReserva{
             }
            
 
-            // await objReserva.agregarReserva(datosReserva)
+            await objReserva.agregarReserva(datosReserva)
 
             
         } catch (error) {
