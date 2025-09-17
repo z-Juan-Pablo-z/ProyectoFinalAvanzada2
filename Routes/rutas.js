@@ -11,6 +11,8 @@ rutasPersonalizadas.get('/hotelesnick/habitaciones',controladorHabitacion.buscar
 rutasPersonalizadas.get('/hotelesnick/habitacion/:idHabitacion',controladorHabitacion.buscarHabitacionPorId)
 rutasPersonalizadas.post('/hotelesnick/habitacion',controladorHabitacion.registrarHabitacion)
 rutasPersonalizadas.put('/hotelesnick/habitacion/:idHabitacion',controladorHabitacion.editarHabitacion)
+rutasPersonalizadas.delete('/hotelesnick/habitacion/:idHabitacion',controladorHabitacion.borrarHabitacion)
+
 rutasPersonalizadas.get('/hotelesnick/reservas',controladorReserva.buscarReservas)
 rutasPersonalizadas.get('/hotelesnick/reserva/:idReserva',controladorReserva.buscarReservasPorId)
 rutasPersonalizadas.post('/hotelesnick/reserva', controladorReserva.registrarReserva)

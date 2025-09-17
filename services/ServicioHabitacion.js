@@ -28,4 +28,8 @@ export class ServicioHabitacion{
     async editarHabitacion(id,habitacionEdit){
         return await modeloHabitacion.findByIdAndUpdate(id,habitacionEdit);
     }
+    
+    async borrarHabitacion(id){
+        return await modeloHabitacion.findByIdAndDelete(id);
+    }
 }

@@ -116,23 +116,51 @@ export class ControladorReserva{
 
     }
     async editarReserva(request,response){
+        let datosReserva = request.body
+        let objServicioH = new ServicioHabitacion()
         let id_rq = request.params.idReserva
         let datos_rq = request.body
         let objReserva = new ServicioReserva()
 
-        console.log(id_rq," ",datos_rq);
+        
         try {
-            
+            let datos_habitacion = await objServicioH.buscarHabitacionPorId(datosReserva.idHabitacion);
+            let maxPerson = datos_habitacion.numeroMaximoPersonas
+            let numeroPersonas = datosReserva.numeroNinos+datosReserva.numeroAdultos;
+            let entrada = new Date(datosReserva.fechaEntrada);
+            let salida = new Date(datosReserva.fechaSalida);
+            let costo = 0;
+            const diffInDays = Math.floor((salida - entrada) / (1000 * 60 * 60 * 24))+1;
+
+            console.log(id_rq," ",datos_rq);
+            if(diffInDays>0){
+                //no programa ni el 300 ni el 500
+                //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
+                costo = Number(datos_habitacion.valorNoche)*Number(diffInDays);
+                if(maxPerson>= numeroPersonas){
+                    response.status(200).json({
+                        "mensaje" : "exito Agregando la reserva",
+                        "datos" : null,
+                        "estado" : true
+                    })
+                }else{
+                    response.status(400).json({
+                        "mensaje" : "No caben Tantos desparchao",
+                        "datos" : null,
+                        "estado" : true
+                    })
+                }
+            }else{
+                response.status(400).json({
+                    "mensaje" : "No mijo, quedese al menos un dia",
+                    "datos" : null,
+                    "estado" : true
+                })
+
+            }
             
             await objReserva.editarReserva(id_rq,datos_rq)
 
-            //no programa ni el 300 ni el 500
-            //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
-            response.status(200).json({
-                "mensaje" : "exito en la consulta "+id_rq,
-                "datos" : datos_rq,
-                "estado" : true
-            })
         } catch (error) {
             //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
             //response.send("estoy buscando habitaciones desde el controlador")

@@ -106,5 +106,29 @@ export class ControladorHabitacion{
         //response.send("estoy editando desde el controlador")
     }
 
+    async borrarHabitacion(request,response){
+        let id_rq = request.params.idHabitacion
+        let objServicioH = new ServicioHabitacion()
+        console.log(id_rq);
+        try {
+            await objServicioH.borrarHabitacion(id_rq);
+            //no programa ni el 300 ni el 500
+            //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
+            response.status(200).json({
+                "mensaje" : "exito en la consulta "+id_rq,
+                "datos" : "Aqui van los datos de Habitaciones",
+                "estado" : true
+            })
+        } catch (error) {
+            //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
+            response.status(400).json({
+                "mensaje" : "Fallo en la consulta "+error,
+                "datos" : null,
+                "estado" : false
+            })
+        }
+        //response.send("Estoy eliminando una habitacion desde el controlador")
+
+    }
 
 }
