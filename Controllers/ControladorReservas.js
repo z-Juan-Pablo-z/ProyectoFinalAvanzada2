@@ -63,7 +63,6 @@ export class ControladorReserva{
 
         //valor de la noche , numero maximo personas(calculo de ninos y adultos)
         //salida-entrada #dias x valornoche
-        console.log(datosReserva);
         try {
             
             let datos_habitacion = await objServicioH.buscarHabitacionPorId(datosReserva.idHabitacion);
@@ -77,6 +76,9 @@ export class ControladorReserva{
                 //no programa ni el 300 ni el 500
                 //full comillas por que es un json y se pone en ambos lugares , aunque no es obligatorio
                 costo = Number(datos_habitacion.valorNoche)*Number(diffInDays);
+                datosReserva.costoReserva = costo;
+                
+
                 if(maxPerson>= numeroPersonas){
                     response.status(200).json({
                         "mensaje" : "exito Agregando la reserva",

@@ -13,8 +13,8 @@ export class ServicioReserva{
         return reserva;
     }
 
-    async agregarReserva(reservaAgg){
-        let datosValidados = new modeloReserva(reservaAgg);
+    async agregarReserva(reservaAgg,costoReserva){
+        let datosValidados = new modeloReserva(reservaAgg,costoReserva);
         return await datosValidados.save();
     }
 
